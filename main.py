@@ -31,6 +31,7 @@ COMMAND_PREFIX = "!!"
 class MyClient(discord.Client):
     
     embed_files = {}
+    embed_color = 15671657
     
     async def on_ready(self):
         print(f"Logged on as {self.user}")
@@ -50,14 +51,17 @@ class MyClient(discord.Client):
                 command_arguments = msg_lower[2:].split(" ")
                 print("Command Sent, command arguments -> ", command_arguments)
                 
+                if command_arguments[0] == "ajuda" or command_arguments[0] == "help":
+                    await self.send_help(message)
+                
                 # Tracker channel commands
                 TRACKER_CHANNEL = 770112076986712125
                 if message.channel.id == TRACKER_CHANNEL:
                     # (prefix)topdomes
                     if command_arguments[0] == "topmes":
-                        await self.get_top_scores(message, 30, "month")
+                        await self.get_top_scores(message, 30, "month", "Mês")
                     elif command_arguments[0] == "topsemana":
-                        await self.get_top_scores(message, 7, "week")
+                        await self.get_top_scores(message, 7, "week", "Semana")
                      
             # Message at test channel
             elif message.channel.id == 870640820364124162:
@@ -71,7 +75,7 @@ class MyClient(discord.Client):
 
 
     # Functions
-    async def get_top_scores(self, message:discord.Message, day_limit:int, prefix:str = "") -> list:
+    async def get_top_scores(self, message:discord.Message, day_limit:int, prefix:str = "", prefix_text:str = "") -> None:
         embed_file_name = f"embeds\\{prefix}_track_{message.channel.id}"
         
         def save_embed(embed:discord.Embed) -> None:
@@ -123,6 +127,11 @@ class MyClient(discord.Client):
                             embed_title:str = embed.title
                             embed_description:str = embed.description
                             embed_author_name:str = embed.author.name
+
+                            date:datetime.datetime = embed.timestamp
+                            day = date.day
+                            month = date.month
+                            year = date.year
                             
                             parsed_message = {
                                 "player_name" : embed_author_name.rsplit("for ", 1)[1],
@@ -132,6 +141,9 @@ class MyClient(discord.Client):
                                 "map_difficulty" : "[" + embed_title.rsplit(" [", 1)[1],
                                 "mods" : embed_description.split(" ", 1)[0],
                                 "pp" : embed_description.split("\n")[3].replace("*", "").split("|")[0].replace(" pp", ""),
+                                "day": day,
+                                "month": month,
+                                "year": year,
                                 }
                             
                             bot_messages.append(parsed_message)
@@ -161,8 +173,16 @@ class MyClient(discord.Client):
                 current_difficulty = current_message["map_difficulty"]
                 current_mods = current_message["mods"]
                 current_pp = current_message["pp"]
+                current_day = current_message["day"]
+                current_month = current_message["month"]
+                current_year = current_message["year"]
                 
-                current_entry = f"**[{current_player}]({current_player_profile})\n{current_pp}pp\n[{current_map} {current_difficulty}]({current_map_link})\n+{current_mods.replace('HRHD', 'HDHR').replace('DTHD', 'HDDT').replace('FLHD', 'HDFL')}**"
+                current_entry = f"\
+                    **[{current_player}]({current_player_profile})\n{current_pp}pp\n\
+                    [{current_map} {current_difficulty}]({current_map_link})\n\
+                    +{current_mods.replace('HRHD', 'HDHR').replace('DTHD', 'HDDT').replace('FLHD', 'HDFL')}\n\
+                    {current_day}/{current_month}/{current_year}\
+                    **"
                 output_embed.add_field(name=f"#{i + 1}", value=current_entry, inline=True)
                 # output_description = "\n\n".join([output_description, f"{current_entry}"])
                 
@@ -171,10 +191,10 @@ class MyClient(discord.Client):
             
             output_embed.type = "rich"
             output_embed.url = ""
-            output_embed.title = f"Top PP do Mês do canal #{message.channel.name}"
+            output_embed.title = f"Top PP do {prefix_text} do canal #{message.channel.name}"
             output_embed.description = f"OBS: Essas informações só podem ser atualizadas uma vez por dia!"
             output_embed.set_footer(text=f"Última atualização: {last_update_timestamp_tz.day}/{last_update_timestamp_tz.month}/{last_update_timestamp_tz.year} às {last_update_timestamp_tz.hour}h{last_update_timestamp_tz.minute}m{last_update_timestamp_tz.second}s")
-            output_embed.colour = 4437377
+            output_embed.colour = self.embed_color
             output_embed.description = output_description
                 
             return output_embed
@@ -197,7 +217,27 @@ class MyClient(discord.Client):
         print(result)
         await self.send_message(channel_id=message.channel.id, msg=None, embed=embed)
         
+    async def send_help(self, message):
+        available_commands = {
+            "topmes" : "**Gerar lista de top PP do tracker feitos no mês**. A lista é atualizada a cada **24 horas.",
+            "topsemana" : "**Gerar lista de top PP do tracker feitos na semana**. A lista é atualizada a cada 24 horas."
+        }
+
+        output_embed = discord.Embed()
         
+        output_embed.type = "rich"
+        output_embed.url = ""
+        output_embed.title = f"Comandos 4fun"
+        output_embed.set_footer(text=f"Bot feito por luis10barbo#3251")
+        output_embed.colour = self.embed_color
+        
+        for i, command in zip(range(len(available_commands)), available_commands):
+            command_description = available_commands[command]
+            
+            current_entry = command_description
+            output_embed.add_field(name=f"{COMMAND_PREFIX}{command}", value=current_entry, inline=False)
+            
+        await self.send_message(channel_id=message.channel.id, msg=None, embed=output_embed)
             
             
 
