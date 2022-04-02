@@ -55,7 +55,9 @@ class MyClient(discord.Client):
                 if message.channel.id == TRACKER_CHANNEL:
                     # (prefix)topdomes
                     if command_arguments[0] == "topmes":
-                        await self.top_do_mes(message)
+                        await self.get_top_scores(message, 30, "month")
+                    elif command_arguments[0] == "topsemana":
+                        await self.get_top_scores(message, 7, "week")
                      
             # Message at test channel
             elif message.channel.id == 870640820364124162:
@@ -69,8 +71,8 @@ class MyClient(discord.Client):
 
 
     # Functions
-    async def top_do_mes(self, message:discord.Message) -> list:
-        embed_file_name = f"embeds\\track_{message.channel.id}"
+    async def get_top_scores(self, message:discord.Message, day_limit:int, prefix:str = "") -> list:
+        embed_file_name = f"embeds\\{prefix}_track_{message.channel.id}"
         
         def save_embed(embed:discord.Embed) -> None:
             self.embed_files[message.channel.id] = {"created_at" : date_now,"embed_object": embed}
@@ -97,7 +99,7 @@ class MyClient(discord.Client):
             else:
                 return 1
                 
-        async def get_bot_messages(day_limit=30, message_limit=None) -> list:        
+        async def get_bot_messages(day_limit=day_limit, message_limit=None) -> list:        
             latest_message_date = None
             one_month_ago_date = date_now - datetime.timedelta(days=day_limit)
             
