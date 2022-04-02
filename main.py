@@ -160,7 +160,7 @@ class MyClient(discord.Client):
                 current_mods = current_message["mods"]
                 current_pp = current_message["pp"]
                 
-                current_entry = f"**[{current_player}]({current_player_profile})\n{current_pp}pp\n[{current_map} {current_difficulty}]({current_map_link})\n+{current_mods.replace('hrhd', 'hdhr').replace('dthd', 'hddt').replace('flhd', 'hdfl')}**"
+                current_entry = f"**[{current_player}]({current_player_profile})\n{current_pp}pp\n[{current_map} {current_difficulty}]({current_map_link})\n+{current_mods.replace('HRHD', 'HDHR').replace('DTHD', 'HDDT').replace('FLHD', 'HDFL')}**"
                 output_embed.add_field(name=f"#{i + 1}", value=current_entry, inline=True)
                 # output_description = "\n\n".join([output_description, f"{current_entry}"])
                 
