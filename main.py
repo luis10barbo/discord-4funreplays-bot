@@ -10,6 +10,7 @@ import datetime
 import pickle
 import os
 import pytz
+import useful_functions
 
 # Logging
 logging.basicConfig(filename="discord.log", level=logging.DEBUG, format= "| {asctime} | {levelname:<8} > {message}", style="{",filemode="w")
@@ -45,7 +46,12 @@ class MyClient(discord.Client):
         
         if message.author.id == self.bot_user.id:
           pass
+          
         else:
+            if useful_functions.check_word_exists("luis", msg_lower):
+                await self.send_message(message.channel.id, msg="barbo")
+            
+        
             # Commands
             if msg_lower.startswith(COMMAND_PREFIX):
                 command_arguments = msg_lower[2:].split(" ")
