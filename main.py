@@ -48,9 +48,22 @@ class MyClient(discord.Client):
           pass
           
         else:
-            if useful_functions.check_word_exists("luis", msg_lower):
-                await self.send_message(message.channel.id, msg="barbo")
+            output = []
+            output_string = ""
             
+            if useful_functions.check_word_exists("luis", msg_lower):
+                output.append("barbo")
+            
+            if useful_functions.check_word_exists("hugo", msg_lower):
+                output.append("https://cdn.discordapp.com/attachments/822147876125147156/960867878855401512/hugo.gif")
+            
+            if useful_functions.check_word_exists("ghossert", msg_lower):
+                output.append("https://cdn.discordapp.com/attachments/822147876125147156/960867878595346502/hugo2.gif")
+                
+            for output_entry in output:
+                output_string += f"{output_entry}\n"
+                
+            await self.send_message(message.channel.id, output_string)
         
             # Commands
             if msg_lower.startswith(COMMAND_PREFIX):
