@@ -56,6 +56,9 @@ class MyClient(discord.Client):
             
             if useful_functions.check_word_exists("hugo", msg_lower):
                 output.append("https://cdn.discordapp.com/attachments/822147876125147156/960867878855401512/hugo.gif")
+                
+            if useful_functions.check_word_exists("hugo", msg_lower):
+                output.append("https://media.discordapp.net/attachments/835156420546265108/926229011833692200/cooltext398714342772621.gif")
             
             # if useful_functions.check_word_exists("ghossert", msg_lower):
             #     output.append("https://cdn.discordapp.com/attachments/822147876125147156/960867878595346502/hugo2.gif")
