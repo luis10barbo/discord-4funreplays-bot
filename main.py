@@ -63,7 +63,8 @@ class MyClient(discord.Client):
             for output_entry in output:
                 output_string += f"{output_entry}\n"
                 
-            await self.send_message(message.channel.id, output_string)
+            if output_string.replace(" ", "").replace("\n", "") != "":
+                await self.send_message(message.channel.id, output_string)
         
             # Commands
             if msg_lower.startswith(COMMAND_PREFIX):
